@@ -4,9 +4,12 @@
 #
 # 2025-11-23 - V. Mitard : Création
 # 2026-01-19 - V. Mitard : Généralisation de la création suivant le No de Pod
+# 2026-01-31 - V. Mitard : Utilisation de la variable d'environnement $PodID comme numéro de Pod par défaut
 #
 #
 scriptName=`basename $0`
+scriptDir=`realpath $0`
+scriptDir=`dirname $scriptDir`
 playbooks=/home/ansible/playbooks
 ansibleHosts=/home/ansible/.ansible/hosts
 subnetGW=172.16.0.1
@@ -27,6 +30,7 @@ fi
 while getopts "dDe:hHt:" opt; do
   case $opt in
     d|D) set -x
+	 ansibleArgs="-vvvvv"
 	 ;;
     e) authenticationFile=$OPTARG
        nbParam+=1
@@ -51,14 +55,18 @@ done
 
 shift $((OPTIND-1))
 
-if [ $# -ne 1 ]; then
-  echo -e "\n-E- Nombre de paramètres incorrects !"
-  echo -e "-I- $scriptName -h|-H pour obtenir de l'aide en ligne.\n"
-  exit 1
-fi
+case $# in
+  0) PodNo=$PodID
+     ;;
+  1) PodNo=$1
+     ;;
+  *) echo -e "\n-E- Nombre de paramètres incorrects !"
+     echo -e "-I- $scriptName -h|-H pour obtenir de l'aide en ligne.\n"
+     exit 1
+     ;;
+esac
 
-PodID=$1
-Routers="Pod"$PodID"RTR"
+Routers="Pod"$PodNo"RTR"
 
 case ${routersType,,} in
   all)    core=true
@@ -66,36 +74,36 @@ case ${routersType,,} in
           client=true
           ;;
   core)   core=true
-          Routers="Pod"$PodID"Core"
+          Routers="Pod"$PodNo"Core"
 	  ;;
   client) client=true
-          Routers="Pod"$PodID"Client"
+          Routers="Pod"$PodNo"Client"
 	  ;;
   edge)   edge=true
-          Routers="Pod"$PodID"Edge"
+          Routers="Pod"$PodNo"Edge"
 	  ;;
   *) echo -e "-E- Option $routersType invalide !\n"
      exit 1
      ;;
 esac
 
-CoreRoutersCfg="Cores.cfg"
-EdgeRoutersCfg="Edges.cfg"
-ClientRoutersCfg="Clients.cfg"
-vnetList="/home/ansible/scripts/VNets.cfg"
+CoreRoutersCfg="cfgFiles/Cores.cfg"
+EdgeRoutersCfg="cfgFiles/Edges.cfg"
+ClientRoutersCfg="cfgFiles/Clients.cfg"
+vnetList="cfgFiles/VNets.cfg"
 
 # Création de la zone réseau et des sous-réseaux logiques associées pour le Pod
-ansible-playbook -i $ansibleHosts -e @$authenticationFile -e "PodID=$PodID" $playbooks/pve/createSDNzone.yml
-ansible-playbook -i $ansibleHosts -e @$authenticationFile -e "PodID=$PodID vnets=$vnetList" $playbooks/pve/createSDNvnets.yml
+ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "PodID=$PodNo" $playbooks/pve/createSDNzone.yml
+ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "PodID=$PodNo vnets=$scriptDir/$vnetList" $playbooks/pve/createSDNvnets.yml
 
 if [[ "$core" = true ]]; then
 # Création des routeurs 'core'
   while IFS=" " read -r routerID net1 net2 net3
   do
     # Création du routeur virtuel
-    hostname="Pod"$PodID"-RTR"$routerID
-    ipAddress="172.16."$PodID"."$routerID"/16"
-    ansible-playbook -i $ansibleHosts -e @$authenticationFile -e "template_name=$template VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW VMnet1=P$PodID$net1 VMnet2=P$PodID$net2 VMnet3=P$PodID$net3" $playbooks/pve/3ItfRouterVMcreation.yml
+    hostname="Pod"$PodNo"-RTR"$routerID
+    ipAddress="172.16."$PodNo"."$routerID"/16"
+    ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "template_name=$template VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW VMnet1=P$PodNo$net1 VMnet2=P$PodNo$net2 VMnet3=P$PodNo$net3" $playbooks/pve/3ItfRouterVMcreation.yml
     hosts+=("$hostname")
     routerList+=("$ipAddress")
   done < $CoreRoutersCfg
@@ -106,9 +114,9 @@ if [[ "$edge" = true ]]; then
   while IFS=" " read -r routerID net1 net2 net3 net4
   do
   # Création du routeur virtuel
-    hostname="Pod"$PodID"-RTR"$routerID
-    ipAddress="172.16."$PodID"."$routerID"/16"
-    ansible-playbook -i $ansibleHosts -e @$authenticationFile -e "template_name=$template VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW VMnet1=P$PodID$net1 VMnet2=P$PodID$net2 VMnet3=P$PodID$net3 VMnet4=P$PodID$net4" $playbooks/pve/4ItfRouterVMcreation.yml
+    hostname="Pod"$PodNo"-RTR"$routerID
+    ipAddress="172.16."$PodNo"."$routerID"/16"
+    ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "template_name=$template VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW VMnet1=P$PodNo$net1 VMnet2=P$PodNo$net2 VMnet3=P$PodNo$net3 VMnet4=P$PodNo$net4" $playbooks/pve/4ItfRouterVMcreation.yml
     hosts+=("$hostname")
     routerList+=("$ipAddress")
   done < $EdgeRoutersCfg
@@ -119,9 +127,9 @@ if [[ "$client" = true ]]; then
   while IFS=" " read -r routerID net1 net2
   do
   # Création du routeur virtuel
-    hostname="Pod"$PodID"-RTR"$routerID
-    ipAddress="172.16."$PodID"."$routerID"/16"
-    ansible-playbook -i $ansibleHosts -e @$authenticationFile -e "template_name=$template VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW VMnet1=P$PodID$net1" $playbooks/pve/singleItfRouterVMcreation.yml
+    hostname="Pod"$PodNo"-RTR"$routerID
+    ipAddress="172.16."$PodNo"."$routerID"/16"
+    ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "template_name=$template VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW VMnet1=P$PodNo$net1" $playbooks/pve/singleItfRouterVMcreation.yml
     hosts+=("$hostname")
     routerList+=("$ipAddress")
   done < $ClientRoutersCfg
@@ -142,11 +150,11 @@ do
 done
 
 # Ajout des utilisateurs 'linux' (SSH) et 'cli' (VTYSH)
-ansible-playbook -i $ansibleHosts -e "target=$Routers" $playbooks/linux-routers/linuxUserCreation.yml
-ansible-playbook -i $ansibleHosts -e "target=$Routers" $playbooks/linux-routers/cliUserCreation.yml
+ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$Routers" $playbooks/linux-routers/linuxUserCreation.yml
+ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$Routers" $playbooks/linux-routers/cliUserCreation.yml
 # Configuration de la VRF de Management
-ansible-playbook -i $ansibleHosts -e "target=$Routers" $playbooks/linux-routers/setMgmtVRF.yml
+ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$Routers" $playbooks/linux-routers/setMgmtVRF.yml
 
 # Suppression des configurations de démarrage Cloud-Init
 extraVarArg="{\"VM_list\":\""${hosts[@]}"\"}"
-ansible-playbook -i $ansibleHosts -e @$authenticationFile -e "$extraVarArg" $playbooks/pve/removeCloudInitConf.yml
+ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "$extraVarArg" $playbooks/pve/removeCloudInitConf.yml

@@ -7,7 +7,6 @@
 scriptName=`basename $0`
 playbooks=/home/ansible/playbooks
 ansibleHosts=/home/ansible/.ansible/hosts
-authenticationFile=/home/ansible/pveAuthentication.yml
 
 while getopts "dDe:hHs:" opt; do
   case $opt in

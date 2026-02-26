@@ -8,7 +8,6 @@
 scriptName=`basename $0`
 playbooks=/home/ansible/playbooks
 ansibleHosts=/home/ansible/.ansible/hosts
-authenticationFile=/home/ansible/pveAuthentication.yml
 
 if [ $# -eq 0 ]; then
   echo -e "\n-E- Paramètre obligatoire absent !"

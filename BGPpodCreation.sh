@@ -90,16 +90,16 @@ do
   ipAddress="172.16."$PodNo"."${routerData[0]}"/16"
   case ${#routerData[@]} in
     2) # Création d'un routeur à une seule interface
-       ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "routerTmplName=$template VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW VMnet1=P$PodNo${routerData[1]}" $playbooks/pve/singleItfRouterVMcreation.yml
+       ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "template_name=$routerTmplName VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW VMnet1=P$PodNo${routerData[1]}" $playbooks/pve/singleItfRouterVMcreation.yml
        ;;
     3) # Création d'un routeur à deux interfaces
-       ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "routerTmplName=$template VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW VMnet1=P$PodNo${routerData[1]} VMnet2=P$PodNo${routerData[2]}" $playbooks/pve/2ItfRouterVMcreation.yml
+       ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "template_name=$routerTmplName VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW VMnet1=P$PodNo${routerData[1]} VMnet2=P$PodNo${routerData[2]}" $playbooks/pve/2ItfRouterVMcreation.yml
        ;;
     4) # Création d'un routeur à trois interfaces
-       ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "routerTmplName=$template VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW VMnet1=P$PodNo${routerData[1]} VMnet2=P$PodNo${routerData[2]} VMnet3=P$PodNo${routerData[3]}" $playbooks/pve/3ItfRouterVMcreation.yml
+       ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "template_name=$routerTmplName VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW VMnet1=P$PodNo${routerData[1]} VMnet2=P$PodNo${routerData[2]} VMnet3=P$PodNo${routerData[3]}" $playbooks/pve/3ItfRouterVMcreation.yml
        ;;
     5) # Création d'un routeur à quatre interfaces
-       ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "routerTmplName=$template VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW VMnet1=P$PodNo${routerData[1]} VMnet2=P$PodNo${routerData[2]} VMnet3=P$PodNo${routerData[3]} VMnet4=P$PodNo${routerData[4]}" $playbooks/pve/4ItfRouterVMcreation.yml
+       ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "template_name=$routerTmplName VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW VMnet1=P$PodNo${routerData[1]} VMnet2=P$PodNo${routerData[2]} VMnet3=P$PodNo${routerData[3]} VMnet4=P$PodNo${routerData[4]}" $playbooks/pve/4ItfRouterVMcreation.yml
   esac
   unset routerData
   hosts+=("$hostname")

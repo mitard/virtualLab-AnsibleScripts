@@ -4,6 +4,7 @@
 #
 # 2026-01-02 - Mitard V. : Création
 # 2026-02-15 - Mitard V. : Ajout des configurations des labs BGP
+# 2026-03-11 - Mitard V. : Suppression de l'initialisation du fichier d'authentification (Initialisé par défaut dans le .profile de l'utilisateur)
 #
 #
 scriptName=`basename $0`

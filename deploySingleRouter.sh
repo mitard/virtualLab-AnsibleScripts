@@ -52,7 +52,7 @@ if [ -z $hostname ]; then
   exit 1
 fi
 
-ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "template_name=$template VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW" $playbooks/pve/noItfRouterVMcreation.yml
+ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "template_name=$template VM_name=$hostname VM_ipAddress=$ipAddress VM_ipGateway=$subnetGW labels=vLab" $playbooks/pve/noItfRouterVMcreation.yml
 
 read -p "Appuyer sur une touche une fois la VM démarrée..." -n 1
 

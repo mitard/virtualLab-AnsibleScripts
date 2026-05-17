@@ -10,11 +10,10 @@
 scriptName=`basename $0`
 playbooks=/home/ansible/playbooks
 ansibleHosts=/home/ansible/.ansible/hosts
-authenticationFile=/home/ansible/lolaAuthentication.yml
 
 if [ $# -eq 0 ]; then
-  echo -e "\n-E- Paramètre obligatoire absent !"
-  echo -e "-I- $scriptName -h|-H pour obtenir de l'aide en ligne.\n"
+  tput setaf 1; echo -e "\n-E- Paramètre obligatoire absent !"; tput sgr0
+  tput setaf 3; echo -e "-I- $scriptName -h|-H pour obtenir de l'aide en ligne.\n"; tput sgr0
   exit 1
 fi
 
@@ -25,14 +24,16 @@ while getopts "dDe:hH" opt; do
 	 ;;
     e) authenticationFile=$OPTARG
        ;;
-    h|H) echo -e "\n-I- $scriptName permet d'initialiser la configuration l'ensemble des routeurs d'un Pod."
+    h|H) tput setaf 3
+	 echo -e "\n-I- $scriptName permet d'initialiser la configuration l'ensemble des routeurs d'un Pod."
 	 echo -e "-I- $scriptName [-d|-D] [-h|-H] [-e <Fichier d'authentification>] RAZ|BGP<n>|PW|L2VPN|L3VPN [<No de Pod>]"
 	 echo -e "\t-d|-D : Activativation des traces de débogage."
 	 echo -e "\t-h|-H : Affichage de cette aide en ligne."
-	 echo -e "\t-e : Nom du fichier contenant les informations d'authentification pour l'accès au noeud Proxmox."
+	 echo -e "\t-e : Nom du fichier contenant les informations d'authentification pour l'accès au noeud Proxmox.\n"
+	 tput sgr0
 	 exit 0
 	 ;;
-    *) echo -e "\n-E- Option $opt invalide !\n"
+    *) tput setaf 1; echo -e "\n-E- Option $opt invalide !\n"; tput sgr0
        exit 1
        ;;
   esac
@@ -45,8 +46,8 @@ case $# in
      ;;
   1) Pod=Pod$PodID
      ;;
-  *) echo -e "\n-E- Nombre de paramètres incorrects !"
-     echo -e "-I- $scriptName -h|-H pour obtenir de l'aide en ligne.\n"
+  *) tput setaf 1; echo -e "\n-E- Nombre de paramètres incorrects !"; tput sgr0
+     tput setaf 3; echo -e "-I- $scriptName -h|-H pour obtenir de l'aide en ligne.\n"; tput sgr0
      exit 1
      ;;
 esac
@@ -66,7 +67,7 @@ case ${1^^} in
   # TP IP/MPLS
   BGP)   playbook=$playbooks/linux-routers/copyFRRconf.yml
          configuration=_MPLS_lab1
-         targets="$Pod"RTR
+         targets=MPLS_"$Pod"RTR
          ;;
   PW)    playbook=$playbooks/linux-routers/copyFRRconf.yml
          configuration=_PW
@@ -78,9 +79,9 @@ case ${1^^} in
          ;;
   L3VPN) playbook=$playbooks/linux-routers/copyFRRconf.yml
          configuration=_MPLS_lab2
-         targets="$Pod"RTR
+         targets=MPLS_"$Pod"RTR
          ;;
-  *) echo -e "\n-E- Option $1 invalide !\n"
+  *) tput setaf 1; echo -e "\n-E- Option $1 invalide !\n"; tput sgr0
      exit 1
      ;;
 esac

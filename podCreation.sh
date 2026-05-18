@@ -13,7 +13,7 @@ scriptDir=`dirname $scriptDir`
 playbooks=/home/ansible/playbooks
 ansibleHosts=/home/ansible/.ansible/hosts
 subnetGW=172.16.0.1
-routerTmplName=Deb12-FRR10
+#routerTmplName=Deb12-FRR
 
 if [ $# -eq 0 ]; then
   tput setaf 1; echo -e "\n-E- Paramètre obligatoire absent !"; tput sgr0
@@ -137,6 +137,9 @@ ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$Routers" $playbooks/l
 ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$Routers" $playbooks/linux-routers/cliUserCreation.yml
 # Configuration de la VRF de Management
 ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$Routers" $playbooks/linux-routers/setMgmtVRF.yml
+# Personnalisation des bannières de post-connexion
+ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$target" $playbooks/linux-routers/setFRRbanner.yml
+ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$target" $playbooks/linux-routers/setSSHbanner.yml
 
 # Suppression des configurations de démarrage Cloud-Init
 extraVarArg="{\"VM_list\":\""${hosts[@]}"\"}"

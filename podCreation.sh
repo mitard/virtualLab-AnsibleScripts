@@ -138,8 +138,8 @@ ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$Routers" $playbooks/l
 # Configuration de la VRF de Management
 ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$Routers" $playbooks/linux-routers/setMgmtVRF.yml
 # Personnalisation des bannières de post-connexion
-ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$target" $playbooks/linux-routers/setFRRbanner.yml
-ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$target" $playbooks/linux-routers/setSSHbanner.yml
+ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$Routers" $playbooks/linux-routers/setFRRbanner.yml
+ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$Routers" $playbooks/linux-routers/setSSHbanner.yml
 
 # Suppression des configurations de démarrage Cloud-Init
 extraVarArg="{\"VM_list\":\""${hosts[@]}"\"}"

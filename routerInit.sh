@@ -5,6 +5,7 @@
 # 2026-01-02 - Mitard V. : Création
 # 2026-02-15 - Mitard V. : Ajout des configurations des labs BGP
 # 2026-03-11 - Mitard V. : Suppression de l'initialisation du fichier d'authentification (Initialisé par défaut dans le .profile de l'utilisateur)
+# 2026-05-23 - Mitard V. : Ajout d'une 3ème topologie pour les TPs BGP (BGP3)
 #
 #
 scriptName=`basename $0`
@@ -63,6 +64,10 @@ case ${1^^} in
   BGP2)  playbook=$playbooks/linux-routers/copyFRRconf.yml
          configuration=_BGP_TP2
          targets=BGP2_"$Pod"RTR
+         ;;
+  BGP3)  playbook=$playbooks/linux-routers/copyFRRconf.yml
+         configuration=_BGP_TP3
+         targets=BGP3_"$Pod"RTR
          ;;
   # TP IP/MPLS
   BGP)   playbook=$playbooks/linux-routers/copyFRRconf.yml

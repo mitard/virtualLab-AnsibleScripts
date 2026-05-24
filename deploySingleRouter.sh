@@ -10,7 +10,7 @@ scriptDir=`dirname $scriptDir`
 playbooks=/home/ansible/playbooks
 ansibleHosts=/home/ansible/.ansible/hosts
 subnetGW=172.16.0.1
-template=Deb12-FRR10
+template=Deb12-FRR
 
 while getopts "a:dDe:g:hHt:n:" opt; do
   case $opt in
@@ -72,7 +72,7 @@ ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$target" $playbooks/li
 # Configuration de la VRF de Management
 ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$target" $playbooks/linux-routers/setMgmtVRF.yml
 # Personnalisation de la bannière de post-connexion
-ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$target" $playbooks/linux-routers/setFRRbanner.yml
+ansible-playbook $ansibleArgs -i $ansibleHosts -e "target=$target" $playbooks/linux-routers/setSSHbanner.yml
 
 # Suppression des configurations de démarrage Cloud-Init
 ansible-playbook $ansibleArgs -i $ansibleHosts -e @$authenticationFile -e "VM_list=$hostname" $playbooks/pve/removeCloudInitConf.yml

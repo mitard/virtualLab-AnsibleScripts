@@ -6,6 +6,7 @@
 # 2026-02-15 - Mitard V. : Ajout des configurations des labs BGP
 # 2026-03-11 - Mitard V. : Suppression de l'initialisation du fichier d'authentification (Initialisé par défaut dans le .profile de l'utilisateur)
 # 2026-05-23 - Mitard V. : Ajout d'une 3ème topologie pour les TPs BGP (BGP3)
+# 2026-05-24 - Mitard V. : Ajout d'une topologie pour le TP OSPF
 #
 #
 scriptName=`basename $0`
@@ -27,7 +28,7 @@ while getopts "dDe:hH" opt; do
        ;;
     h|H) tput setaf 3
 	 echo -e "\n-I- $scriptName permet d'initialiser la configuration l'ensemble des routeurs d'un Pod."
-	 echo -e "-I- $scriptName [-d|-D] [-h|-H] [-e <Fichier d'authentification>] RAZ|BGP<n>|PW|L2VPN|L3VPN [<No de Pod>]"
+	 echo -e "-I- $scriptName [-d|-D] [-h|-H] [-e <Fichier d'authentification>] RAZ|BGP<n>|L2VPN|L3VPN|OSPF|PW [<No de Pod>]"
 	 echo -e "\t-d|-D : Activativation des traces de débogage."
 	 echo -e "\t-h|-H : Affichage de cette aide en ligne."
 	 echo -e "\t-e : Nom du fichier contenant les informations d'authentification pour l'accès au noeud Proxmox.\n"
@@ -55,6 +56,11 @@ esac
 
 case ${1^^} in
   RAZ)   playbook=$playbooks/linux-routers/clearFRRconf.yml
+         ;;
+  # TP routage OSPF
+  BGP1)  playbook=$playbooks/linux-routers/copyFRRconf.yml
+         configuration=_OSPF
+         targets=OSPF_"$Pod"RTR
          ;;
   # TP routage BGP
   BGP1)  playbook=$playbooks/linux-routers/copyFRRconf.yml

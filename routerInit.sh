@@ -103,4 +103,4 @@ ansible-playbook -i $ansibleHosts $ansibleDebug -e @$authenticationFile -e "targ
 ansible-playbook -i $ansibleHosts $ansibleDebug -e @$authenticationFile -e "target=$targets cmd=reboot" $playbooks/linux-routers/execCommand.yml
 if [ "${1^^}" = "L3VPN" ]; then
   ansible-playbook -i $ansibleHosts $ansibleDebug -e @$authenticationFile -e "target=$edges cmd=/usr/local/bin/clients-vrf-conf.sh" $playbooks/linux-routers/execCommand.yml
-i
+fi

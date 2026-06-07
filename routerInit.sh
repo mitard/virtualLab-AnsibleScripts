@@ -97,7 +97,7 @@ case ${1^^} in
           ;;
 esac
 
-edges=Pod$2Edge
+edges="$Pod"Edge
 
 ansible-playbook -i $ansibleHosts $ansibleDebug -e @$authenticationFile -e "target=$targets suffix=$configuration" $playbook
 ansible-playbook -i $ansibleHosts $ansibleDebug -e @$authenticationFile -e "target=$targets cmd=reboot" $playbooks/linux-routers/execCommand.yml
